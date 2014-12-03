@@ -31,11 +31,12 @@ function create() {
     // Event notifications - Game Over, Level, etc
     eventText = game.add.text(40, 150, '');
 
-    scoreText = game.add.text(16, 16, '')
-    livesText = game.add.text(690, 16, '')
-    // TODO: Align text to right (align: 'right' is only for multi line text)
-    timeText = game.add.text(350, 16, '', {fontSize: '8px', fill: '#000'});
-    // timeText.align = 'right'
+    scoreText = game.add.text(16, 50, '')
+    // TODO: Replace this with fun icons
+    livesText = game.add.text(690, 50, '')
+    // Game timer
+    timeText = game.add.text(400, 55, '', {fontSize: '8px', fill: '#000'});
+    timeText.anchor.set(0.5);
 
     // Movement
     cursors = game.input.keyboard.createCursorKeys();
@@ -92,9 +93,6 @@ function createBaddies() {
     var max = 3;
     for (var i = 0; i < max; i++)
     {
-        // debugText.text = 'create baddie #' + i;
-        debugText.text = 'width: ' + game.world.width;
-
         // Evenly spaced out
         var x_pos = (game.world.width / (max + 1)) * (i + 1);
         var baddie = baddies.create(x_pos, 100, 'baddie');
@@ -149,7 +147,6 @@ function updateLeaderBoard() {
 function gameOver() {
     eventText.text = "GAME OVER"
     eventText.fontSize = 125
-    // TODO: Need a delay or button press to continue ...
     newGame();
 }
 
