@@ -8,7 +8,7 @@ var score;
 var scoreText;
 var lives;
 var livesText;
-var bigText;
+var eventText;
 var debugText;
 
 // Preload images and other assets
@@ -24,19 +24,41 @@ function preload() {
 function create() {
     game.physics.startSystem(Phaser.Physics.ARCADE);
     game.add.sprite(0,0,'sky');
+
     // Used for debugging output
     debugText = game.add.text(16, 50, '', {fontSize: '8px', fill: '#000'});
-    bigText = game.add.text(40, game.height / 2, '', {fontSize: '220px', fill: '#000'});
+
+    // Event notifications - Game Over, Level, etc
+    eventText = game.add.text(40, 150, '');
+
+    scoreText = game.add.text(16, 16, '')
+    livesText = game.add.text(690, 16, '')
+    // TODO: Align text to right (align: 'right' is only for multi line text)
+    timeText = game.add.text(350, 16, '', {fontSize: '8px', fill: '#000'});
+    // timeText.align = 'right'
 
     // Movement
     cursors = game.input.keyboard.createCursorKeys();
 
+    newGame();
+}
+
+function newGame() {
+    debugText.text = '';
+    eventText.text = '';
+
+    // Reset the leaderboard
+    score = 0;
+    lives = 3;
+    scoreText.text = 'score: ' + score
+    livesText.text ='lives: ' + lives
+
     // Create ... all the things!
+
     createPlatforms();
     createPlayer();
     createBaddies();
     createStars();
-    createLeaderBoard();
 }
 
 function createPlayer() {
@@ -64,14 +86,6 @@ function createPlatforms() {
     ledge2.body.immovable = true;
 }
 
-// LeaderBoard
-function createLeaderBoard() {
-    score = 0;
-    lives = 3;
-    scoreText = game.add.text(16, 16, 'score: ' + score, {fontSize: '32px', fill: '#000'});
-    livesText = game.add.text(690, 16, 'lives: ' + lives, {fontSize: '32px', fill: '#000'});
-}
-
 function createBaddies() {
     baddies = game.add.group();
     // baddies.enableBody = true;
@@ -82,7 +96,7 @@ function createBaddies() {
         debugText.text = 'width: ' + game.world.width;
 
         // Evenly spaced out
-        var x_pos = (game.world.width / (max + 1)) * i;
+        var x_pos = (game.world.width / (max + 1)) * (i + 1);
         var baddie = baddies.create(x_pos, 100, 'baddie');
         game.physics.arcade.enable(baddie);
         baddie.body.bounce.y = 0.2;
@@ -117,19 +131,26 @@ function update() {
     game.physics.arcade.overlap(player, baddies, playerBaddieCollision, null, this);
 
     // Frame updates
+    updateTime();
     updatePlayer(player);
     updateBaddies(player);
     updateLeaderBoard();
 }
 
+function updateTime() {
+    timeText.text = Math.round(game.time.totalElapsedSeconds());
+}
+
 function updateLeaderBoard() {
     scoreText.text = 'score: ' + score;
-    livesText.text = 'lives: ' + lives; 
+    livesText.text = 'lives: ' + lives;
 }
 
 function gameOver() {
-    // bigText.text = 'GAME OVER MAN'
-    lives = 9;
+    eventText.text = "GAME OVER"
+    eventText.fontSize = 125
+    // TODO: Need a delay or button press to continue ...
+    newGame();
 }
 
 // Aquire the star
@@ -149,7 +170,7 @@ function playerBaddieCollision(player, baddie) {
     if (isCrushingBaddie(player, baddie))
     {
         baddie.kill();
-        score += 50; 
+        score += 50;
     }
     else
     {
@@ -157,7 +178,7 @@ function playerBaddieCollision(player, baddie) {
     }
 
     if (lives == 0)
-    { 
+    {
         gameOver();
     }
 }
@@ -214,7 +235,7 @@ function updateBaddies(player) {
         if (baddie_sees_player)
         {
             if (baddie.body.x > player.body.x)
-            { 
+            {
                 // Follow to left
                 baddie.body.velocity.x = -baddie_speed;
                 baddie.animations.play('left');
@@ -228,7 +249,7 @@ function updateBaddies(player) {
         }
         else
         {
-            // Stop following 
+            // Stop following
             baddie.body.velocity.x = 0;
             baddie.animations.stop();
             // TODO: Face last direction
