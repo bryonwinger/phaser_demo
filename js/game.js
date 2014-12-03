@@ -6,6 +6,9 @@ var platforms;
 var baddies;
 var score;
 var scoreText;
+var lives;
+var livesText;
+var bigText;
 var debugText;
 
 // Preload images and other assets
@@ -21,19 +24,19 @@ function preload() {
 function create() {
     game.physics.startSystem(Phaser.Physics.ARCADE);
     game.add.sprite(0,0,'sky');
+    // Used for debugging output
+    debugText = game.add.text(16, 50, '', {fontSize: '8px', fill: '#000'});
+    bigText = game.add.text(40, game.height / 2, '', {fontSize: '220px', fill: '#000'});
 
     // Movement
     cursors = game.input.keyboard.createCursorKeys();
-
-    // Used for debug output
-    debugText = game.add.text(16, 40, '', {fontSize: '8px', fill: '#000'});
 
     // Create ... all the things!
     createPlatforms();
     createPlayer();
     createBaddies();
     createStars();
-    createScore();
+    createLeaderBoard();
 }
 
 function createPlayer() {
@@ -61,10 +64,12 @@ function createPlatforms() {
     ledge2.body.immovable = true;
 }
 
-// Scoreboard
-function createScore() {
+// LeaderBoard
+function createLeaderBoard() {
     score = 0;
-    scoreText = game.add.text(16, 16, 'score: 0', {fontSize: '32px', fill: '#000'}); 
+    lives = 3;
+    scoreText = game.add.text(16, 16, 'score: ' + score, {fontSize: '32px', fill: '#000'});
+    livesText = game.add.text(690, 16, 'lives: ' + lives, {fontSize: '32px', fill: '#000'});
 }
 
 function createBaddies() {
@@ -101,20 +106,60 @@ function createStars() {
 }
 
 function update() {
+    // Collisions
     game.physics.arcade.collide(player, platforms);
     game.physics.arcade.collide(stars, platforms);
-    game.physics.arcade.overlap(player, stars, collectStar, null, this);
     game.physics.arcade.collide(baddies, platforms);
+    game.physics.arcade.collide(baddies, baddies);
 
+    // Overlapping sprites
+    game.physics.arcade.overlap(player, stars, collectStar, null, this);
+    game.physics.arcade.overlap(player, baddies, playerBaddieCollision, null, this);
+
+    // Frame updates
     updatePlayer(player);
     updateBaddies(player);
+    updateLeaderBoard();
+}
+
+function updateLeaderBoard() {
+    scoreText.text = 'score: ' + score;
+    livesText.text = 'lives: ' + lives; 
+}
+
+function gameOver() {
+    // bigText.text = 'GAME OVER MAN'
+    lives = 9;
 }
 
 // Aquire the star
 function collectStar(player, star) {
     star.kill();
     score += 10;
-    scoreText.text = 'score: ' + score;
+}
+
+// Determine if the player is stomping on the baddies head
+function isCrushingBaddie(player, baddie) {
+    // debugText.text = 'player.y: ' + player.y + 'baddie.y: ' + baddie.y;
+    // if ((player.body.bottom >= baddie.body.y) && (player.body.blocked.down))
+    return false;
+}
+
+function playerBaddieCollision(player, baddie) {
+    if (isCrushingBaddie(player, baddie))
+    {
+        baddie.kill();
+        score += 50; 
+    }
+    else
+    {
+        lives -= 1;
+    }
+
+    if (lives == 0)
+    { 
+        gameOver();
+    }
 }
 
 function updatePlayer(player) {
@@ -147,27 +192,47 @@ function updatePlayer(player) {
     // }
 }
 
+// Calculate the distance between two objects with .x and .y
+function calcDistance(thing_one, thing_two) {
+    dist = Phaser.Math.distanceRounded(
+        thing_one.x, thing_one.y, thing_two.x, thing_two.y
+    );
+    return dist;
+}
+
 function updateBaddies(player) {
+    baddie_speed = 100
+    sight_distance = 200
+
     for (var i = 0; i < baddies.length; i++)
     {
         var baddie = baddies.getAt(i);
-        if (baddie.body.x > player.body.x + 5)
-        { 
-            // Follow to left
-            baddie.body.velocity.x = -125;
-            baddie.animations.play('left');
 
-        }
-        else if (baddie.body.x < player.body.x - 5)
+        var baddie_sees_player = sight_distance > calcDistance(player, baddie);
+
+        // Chase the player if close enough
+        if (baddie_sees_player)
         {
-            // Follow to right
-            baddie.body.velocity.x = 125;
-            baddie.animations.play('right');
+            if (baddie.body.x > player.body.x)
+            { 
+                // Follow to left
+                baddie.body.velocity.x = -baddie_speed;
+                baddie.animations.play('left');
+            }
+            else if (baddie.body.x < player.body.x)
+            {
+                // Follow to right
+                baddie.body.velocity.x = baddie_speed;
+                baddie.animations.play('right');
+            }
         }
         else
         {
             // Stop following 
             baddie.body.velocity.x = 0;
+            baddie.animations.stop();
+            // TODO: Face last direction
+            baddie.frame = 1;
         }
     }
 
