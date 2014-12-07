@@ -31,9 +31,9 @@ function create() {
     // Event notifications - Game Over, Level, etc
     eventText = game.add.text(40, 150, '');
 
-    scoreText = game.add.text(16, 50, '')
+    scoreText = game.add.text(16, 50, '');
     // TODO: Replace this with fun icons
-    livesText = game.add.text(690, 50, '')
+    livesText = game.add.text(690, 50, '');
     // Game timer
     timeText = game.add.text(400, 55, '', {fontSize: '8px', fill: '#000'});
     timeText.anchor.set(0.5);
@@ -51,8 +51,8 @@ function newGame() {
     // Reset the leaderboard
     score = 0;
     lives = 3;
-    scoreText.text = 'score: ' + score
-    livesText.text ='lives: ' + lives
+    scoreText.text = 'score: ' + score;
+    livesText.text ='lives: ' + lives;
 
     // Create ... all the things!
 
@@ -145,8 +145,10 @@ function updateLeaderBoard() {
 }
 
 function gameOver() {
-    eventText.text = "GAME OVER"
-    eventText.fontSize = 125
+    // Remove all the things
+    stars.destroy();
+    baddies.destroy();
+
     newGame();
 }
 
@@ -171,12 +173,16 @@ function playerBaddieCollision(player, baddie) {
     }
     else
     {
+        player.kill();
         lives -= 1;
-    }
 
-    if (lives == 0)
-    {
-        gameOver();
+        if (lives < 0)
+        {
+            gameOver();
+        }
+        else
+        {
+            createPlayer();        }
     }
 }
 
@@ -219,8 +225,8 @@ function calcDistance(thing_one, thing_two) {
 }
 
 function updateBaddies(player) {
-    baddie_speed = 100
-    sight_distance = 200
+    baddie_speed = 100;
+    sight_distance = 200;
 
     for (var i = 0; i < baddies.length; i++)
     {
