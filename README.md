@@ -8,15 +8,14 @@ Currently, the bulk of the code was adapted from the tutorial found at http://ww
 Next steps:
  - Add better 'following' logic to the baddies
  - Baddies shouldn't overlap (collision detection)
- - Baddies can jump :)
- - Baddies kill player
  - More randomness to the level
- - Timer
- - Lives
  - Side scrolling world
  - Title screen
  - Game over screen
  - Powerups ?
+ - Use Tiled for creating levels
+ - Use different art for the game
+ - Audio
 
 I'd also eventually like to figure out how to implement class-like functionality ala Prototype
 
