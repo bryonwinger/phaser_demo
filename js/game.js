@@ -53,13 +53,14 @@ function newGame() {
     lives = 3;
     scoreText.text = 'score: ' + score;
     livesText.text ='lives: ' + lives;
+    game.time.reset();
 
     // Create ... all the things!
-
     createPlatforms();
     createPlayer();
     createBaddies();
     createStars();
+
 }
 
 function createPlayer() {
