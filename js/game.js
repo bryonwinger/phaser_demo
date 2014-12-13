@@ -26,7 +26,7 @@ function create() {
     game.add.sprite(0,0,'sky');
 
     // Used for debugging output
-    debugText = game.add.text(16, 50, '', {fontSize: '8px', fill: '#000'});
+    debugText = game.add.text(16, 80, '', {fontSize: '8px', fill: '#000'});
 
     // Event notifications - Game Over, Level, etc
     eventText = game.add.text(40, 150, '');
@@ -161,9 +161,14 @@ function collectStar(player, star) {
 
 // Determine if the player is stomping on the baddies head
 function isCrushingBaddie(player, baddie) {
-    // debugText.text = 'player.y: ' + player.y + 'baddie.y: ' + baddie.y;
-    // if ((player.body.bottom >= baddie.body.y) && (player.body.blocked.down))
-    return false;
+    if (player.body.y < (baddie.body.y - baddie.body.height))
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 function playerBaddieCollision(player, baddie) {
@@ -183,7 +188,8 @@ function playerBaddieCollision(player, baddie) {
         }
         else
         {
-            createPlayer();        }
+            createPlayer();
+        }
     }
 }
 
