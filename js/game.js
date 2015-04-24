@@ -50,7 +50,7 @@ function newGame() {
 
     // Reset the leaderboard
     score = 0;
-    lives = 3;
+    lives = 5;
     scoreText.text = 'score: ' + score;
     livesText.text ='lives: ' + lives;
     game.time.reset();
