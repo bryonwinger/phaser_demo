@@ -60,7 +60,6 @@ function newGame() {
     createPlayer();
     createBaddies();
     createStars();
-
 }
 
 function createPlayer() {
