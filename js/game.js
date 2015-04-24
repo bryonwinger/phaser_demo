@@ -1,6 +1,6 @@
 
 var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
-
+// This is a useless comment
 // Global vars
 var platforms;
 var baddies;
@@ -265,5 +265,12 @@ function updateBaddies(player) {
             baddie.frame = 1;
         }
     }
+}
 
+function make_ice_cream(flavor) {
+    if (flavor == 'chocolate') {
+        return "CHOCHOLATE";
+    } else {
+        return flavor.upcase();
+    }
 }
