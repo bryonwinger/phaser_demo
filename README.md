@@ -22,4 +22,5 @@ I'd also eventually like to figure out how to implement class-like functionality
 Getting Started
 ===============
 
-To see it in action, you'll need to fire up a local web server (Apache or other like-minded friends) and grant access to the root directory of the repository. Point your browser to index.html and you should be all set.
+To see it in action, you'll need to fire up a local web server (Apache or other like-minded friends) and grant access to the root directory of the repository. Point your browser to index.html and you should be all set.hihi
+
